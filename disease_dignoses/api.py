@@ -44,6 +44,7 @@ async def classify(file: UploadFile = File(...), model: ClassifierModel = Depend
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
     
+########################################################################################################
 
 
 @app.post("/predict_segmentation/", response_class=StreamingResponse)
@@ -66,8 +67,10 @@ async def segment(file: UploadFile = File(...), model: SegmentorModel = Depends(
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "w") as zip_file:
         for i, name in enumerate(disease_names):
-            channel = masks[:, :, i]  # (H, W)
-            channel = np.clip(channel, 0, 255).astype("uint8")
+            print(masks.shape)  # (1, H, W, 5)
+            channel = masks[0][i]  # (H, W)
+            print(f"Channel {i} shape: {channel.shape}")
+            # channel = np.clip(channel, 0, 255).astype("uint8")
 
             pil_image = Image.fromarray(channel).convert("L")
             img_byte_arr = io.BytesIO()
